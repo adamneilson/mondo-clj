@@ -10,17 +10,35 @@
                                                 (keyword)) v)) {} m))
 
 
-(def not-nil? (complement nil?))
-
-
-(defn is-valid-txn-id? "Does the format of the txn id look valid?" [transaction-id]
-  (not-nil? (re-find transaction-id #"tx\_[A-Za-z0-9]*")))
+(defn underscore-keys [m] (reduce (fn [m [k v]] 
+                                   (assoc m (-> k
+                                                (str)
+                                                (clojure.string/trim)
+                                                (clojure.string/replace #"-" "_")
+                                                (keyword)) v)) {} m))
 
 
 (defn remove-nils 
   "Removes all nil valued kv pairs from a map" 
   [m]
   (apply dissoc m (for [[k v] m :when (nil? v)] k)))
+
+
+
+
+(defn prepare-map [m]
+  (-> m
+      (remove-nils)
+      (underscore-keys)))
+
+
+
+
+(def not-nil? (complement nil?))
+
+
+(defn is-valid-txn-id? "Does the format of the txn id look valid?" [transaction-id]
+  (not-nil? (re-find transaction-id #"tx\_[A-Za-z0-9]*")))
 
 
 (defn hex-colour "doc-string" [s]

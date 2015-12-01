@@ -12,7 +12,7 @@ Current [semantic](http://semver.org/) version:
 To use with Leiningen, add
 
 ```
-:dependencies [[mondo-clj 0.0.2]]
+:dependencies [[mondo-clj 0.0.4]]
 ```
 to your project.clj.
 
@@ -125,12 +125,32 @@ You can inject items into an accounts feed
                          :url "http://aan.io"}
 ```
 
+### Webhooks
+Web hooks allow your application to receive real-time, push notification of events in an account. 
+
+You can register a webhook:
+
+```
+(mondo/register-webhook access-token account-id webhook-url)
+```
+
+List the web hooks registered on an account:
+
+```
+(mondo/list-webhooks access-token account-id)
+```
+
+Or delete a webhook to stop receiving transaction events:
+
+```
+(mondo/delete-webhook access-token webhook-id)
+```
+
+
+
 ## To Dos
 The following endpoints are yet to be completed:
 
-  - `register-webhook`
-  - `delete-webhook`
-  - `list-webhooks`
   - `upload-attachment`
   - `register-attachment`
   - `deregister-attachment`

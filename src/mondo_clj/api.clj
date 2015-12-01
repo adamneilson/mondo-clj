@@ -87,3 +87,19 @@
 
 
 
+
+(defn DELETE [uri access-token]
+  (let [url (str api-url uri)
+        options (merge basic-request-options 
+                       {:url url
+                        :method :delete
+                        :oauth-token (when (seq access-token) access-token)})
+        {:keys [status body error]} @(http/delete url options)]
+    (if error
+      (get-error status)
+      (-> (decode body)
+          (assoc :status (get-error status))
+          (keywordize-map)))))
+
+
+

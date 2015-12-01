@@ -7,6 +7,13 @@
 
 
 
+;;================================================
+;;
+;;  AUTHORIZATION
+;;
+;;================================================
+
+
 (defn get-access-token 
   "An access token is tied to both your application (the client) and 
   an individual Mondo user and is valid for several hours.
@@ -37,6 +44,7 @@
           :username username
           :password password}
          (pre-process-vals)
+         (prepare-map)
          (api/POST "/oauth2/token"))
     (api/get-error 400)))
 
@@ -74,6 +82,7 @@
           :client-secret client-secret
           :refresh-token refresh-token}
          (pre-process-vals)
+         (prepare-map)
          (api/POST "/oauth2/token"))
     (api/get-error 400)))
 
@@ -89,6 +98,13 @@
 
 
 
+;;================================================
+;;
+;;  ACCOUNTS
+;;
+;;================================================
+
+
 (defn list-accounts 
   "Returns a list of accounts owned by the currently authorised 
   user." 
@@ -96,6 +112,15 @@
   (if (not-nil? access-token)
     (api/GET "/accounts" access-token)
     (api/get-error 400)))
+
+
+
+
+;;================================================
+;;
+;;  TRANSACTIONS
+;;
+;;================================================
 
 
 
@@ -132,30 +157,30 @@
       ; is it set?
       (if (nil? since)
         ; moot point
-        (deliver opts {:account-id account-id
-                       :limit limit 
-                       :before before-zulu})
+        (deliver opts (prepare-map {:account-id account-id
+                                    :limit limit 
+                                    :before before-zulu}))
         ; test for txn ID
         (if (and (string? since)
                  (is-valid-txn-id? since))
-          (deliver opts {:account-id account-id
-                         :limit limit 
-                         :since since})
+          (deliver opts (prepare-map {:account-id account-id
+                                      :limit limit 
+                                      :since since}))
 
           ;however if it's an instant then we may want to have 
           ;a timeframe with the before instant as well...
-          (deliver opts {:account-id account-id
-                         :limit limit 
-                         :since since-zulu 
-                         :before before-zulu})))
+          (deliver opts (prepare-map {:account-id account-id
+                                      :limit limit 
+                                      :since since-zulu 
+                                      :before before-zulu}))))
 
       (api/GET "/transactions" access-token @opts))
     (api/get-error 400)))
 
-(comment {:access-token "0000000000000000"
-          :account-id "account_id"
-          :limit [100 0] ;[per-page page-number]
-          :since #inst "2015-11-26T00:00:00.000-00:00"})
+(comment (prepare-map {:access-token "0000000000000000"
+                       :account-id "account_id"
+                       :limit [100 0] ;[per-page page-number]
+                       :since #inst "2015-11-26T00:00:00.000-00:00"}))
 
 
 
@@ -181,6 +206,13 @@
 
 
 
+;;================================================
+;;
+;;  FEED
+;;
+;;================================================
+
+
 
 (defn create-feed-item
   "Inject an item/event into an accounts feed"
@@ -201,34 +233,69 @@
                          (assoc :background-color (hex-colour (:background-color params)))
                          (assoc :body-color (hex-colour (:body-color params)))
                          (assoc :title-color (hex-colour (:title-color params)))
-                         (remove-nils))]
+                         (remove-nils)
+                         (prepare-map))]
       (api/POST "/feed" 
                 access-token 
-                (remove-nils {:account-id account-id
+                (prepare-map {:account-id account-id
                               :type type
                               :params parameters
                               :url url})))
     (api/get-error 400)))
 
-(comment {:access-token "0000000000000000"
-          :account-id "account_id"
-          :type "basic"
-          :params {:title "My custom item"
-                   :image-url "www.example.com/image.png"
-                   :background-color "#FCF1EE"
-                   :body-color "#FCF1EE"
-                   :title-color "#333"
-                   :body "Some body text to display"}
-          :url "http://aan.io"})
+(comment (prepare-map {:access-token "0000000000000000"
+                       :account-id "account_id"
+                       :type "basic"
+                       :params {:title "My custom item"
+                                :image-url "www.example.com/image.png"
+                                :background-color "#FCF1EE"
+                                :body-color "#FCF1EE"
+                                :title-color "#333"
+                                :body "Some body text to display"}
+                       :url "http://aan.io"}))
+
+
+
+
+;;================================================
+;;
+;;  WEBHOOKS
+;;
+;;================================================
+
+(defn register-webhook [access-token account-id url] 
+  (if (every? not-nil? [access-token account-id url])
+    (api/POST "/webhooks" 
+              access-token 
+              (prepare-map {:account-id account-id
+                            :url url})))
+  (api/get-error 400))
+
+
+(defn list-webhooks [access-token account-id] 
+  (if (every? not-nil? [access-token account-id url])
+    (api/GET "/webhooks" 
+             access-token 
+             (prepare-map {:account-id account-id})))
+  (api/get-error 400))
+
+
+
+(defn delete-webhook [access-token webhook-id] 
+  (if (every? not-nil? [access-token webhook-id])
+    (api/DELETE (format "/webhooks/%s" webhook-id) access-token))
+  (api/get-error 400))
 
 
 
 
 
 
-  (defn register-webhook [] nil)
-  (defn delete-webhook [] nil)
-  (defn list-webhooks [] nil)
+;;================================================
+;;
+;;  ATTACHMENTS
+;;
+;;================================================
 
   (defn upload-attachment [] nil)
   (defn register-attachment [] nil)
