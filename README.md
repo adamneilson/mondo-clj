@@ -1,6 +1,6 @@
 # mondo-clj
 
-<img src="https://getmondo.co.uk/docs/images/logo-6cef8dc1.svg" style="width:200px">
+![](https://raw.githubusercontent.com/adamneilson/mondo-clj/master/resources/mondo-alpha-card.png)
 
 This clojure lib gives a simple DSL for the [Mondo API](https://getmondo.co.uk/docs/). It's pre-alpha as I'm a couple of days away from getting my grubby paws on my shiny new Mondo account.
 
