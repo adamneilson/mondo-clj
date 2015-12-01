@@ -84,7 +84,11 @@ To get a list of accounts:
 Returns something like:
 
 ```clojure
-{:accounts [{:id "acc_00009237aqC8c5umZmrRdh"
+{:status {:success? true 
+          :error-code 200 
+          :error-name "OK" 
+          :error-body "All is well."}
+ :accounts [{:id "acc_00009237aqC8c5umZmrRdh"
              :description "Peter Pan's Account"
              :created #inst "2015-12-01T00:00:00.000-00:00"}]}
 
@@ -99,7 +103,11 @@ Get the balance of a specific account
 Returns:
 
 ```clojure
-{:balance 50.0
+{:status {:success? true 
+          :error-code 200 
+          :error-name "OK" 
+          :error-body "All is well."}
+ :balance 50.0
  :currency "GBP"
  :spend-today 0.0}
 ```
@@ -114,7 +122,11 @@ Get details of a single transaction. NB: full merchant details are returned:
 
 Returns 
 ```clojure
-{:transaction {:account-balance 130.13
+{:status {:success? true 
+          :error-code 200 
+          :error-name "OK" 
+          :error-body "All is well."}
+ :transaction {:account-balance 130.13
                :amount -5.10
                :created #inst "2015-12-01T00:00:00.000-00:00"
                :currency "GBP"
@@ -211,7 +223,11 @@ The first step when uploading an attachment is to obtain a temporary URL to whic
 ```
 Returns:
 ```clojure
-{:file-url "https://s3-eu-west-1.amazonaws.com/mondo-image-uploads/user_00009237hliZellUicKuG1/LcCu4ogv1xW28OCcvOTL-foo.png"
+{:status {:success? true 
+          :error-code 200 
+          :error-name "OK" 
+          :error-body "All is well."}
+ :file-url "https://s3-eu-west-1.amazonaws.com/mondo-image-uploads/user_00009237hliZellUicKuG1/LcCu4ogv1xW28OCcvOTL-foo.png"
  :upload-url "https://mondo-image-uploads.s3.amazonaws.com/user_00009237hliZellUicKuG1/LcCu4ogv1xW28OCcvOTL-foo.png?AWSAccessKeyId=AKIAIR3IFH6UCTCXB5PQ\u0026Expires=1447353431\u0026Signature=k2QeDCCQQHaZeynzYKckejqXRGU%!D(MISSING)"}
 ```
 
@@ -221,7 +237,11 @@ Once you have obtained a URL for an attachment, either by uploading to the `:upl
 ```
 Returns:
 ```clojure
-{:attachment {:id "attach_00009238aOAIvVqfb9LrZh"
+{:status {:success? true 
+          :error-code 200 
+          :error-name "OK" 
+          :error-body "All is well."}
+ :attachment {:id "attach_00009238aOAIvVqfb9LrZh"
               :user_id "user_00009238aMBIIrS5Rdncq9"
               :external-id "tx_00008zIcpb1TB4yeIFXMzx"
               :file-url "https://s3-eu-west-1.amazonaws.com/mondo-image-uploads/user_00009237hliZellUicKuG1/LcCu4ogv1xW28OCcvOTL-foo.png"
