@@ -11,19 +11,19 @@ Current [semantic](http://semver.org/) version:
 
 To use with Leiningen, add
 
-```
+```clojure
 :dependencies [[mondo-clj 0.0.4]]
 ```
 to your project.clj.
 
 You can use it in a source file like this:
 
-```
+```clojure
 (:require [mondo-clj.core :as mondo])
 ```
 or by REPL:
 
-```
+```clojure
 (require '[mondo-clj.core :as mondo])
 ```
 
@@ -42,7 +42,7 @@ The Mondo API implements OAuth 2.0 so the first step is to get a token:
 
 This should return a map similar to this:
 
-```
+```clojure
 {:status {:success? true 
           :error-code 200 
           :error-name "OK" 
@@ -58,13 +58,13 @@ As you can see I'm adding the `:status` to the returned map to give a bit of con
 
 At any time you can get information about an access token, using:
 
-```
+```clojure
 (mondo/whoami access-token)
 ```
 
 returns:
 
-```
+```clojure
 {:status {:success? true 
           :error-code 200 
           :error-name "OK" 
@@ -75,17 +75,21 @@ returns:
 ```
 
 To get a list of accounts:
-```
+
+```clojure
 (mondo/list-accounts access-token)
 ```
 
 ### Transactions
 Get details of a single transaction:
-```
+
+```clojure
 (mondo/get-transaction access-token transaction-id)
 ```
+
 Or list transactions
-```
+
+```clojure
 (mondo/list-transactions access-token account-id)
 
 ;or 
@@ -104,7 +108,7 @@ Or list transactions
 
 You can also add meta-data to a transaction
 
-```
+```clojure
 (mondo/annotate-transaction access-token transaction-id metadata-map)
 ```
 where `metadata-map` is a simple map of key vals.
@@ -112,7 +116,8 @@ where `metadata-map` is a simple map of key vals.
 ### Feed
 
 You can inject items into an accounts feed
-```
+
+```clojure
 (mondo/create-feed-item {:access-token "0000000000000000"
                          :account-id "account_id"
                          :type "basic"
@@ -130,19 +135,19 @@ Web hooks allow your application to receive real-time, push notification of even
 
 You can register a webhook:
 
-```
+```clojure
 (mondo/register-webhook access-token account-id webhook-url)
 ```
 
 List the web hooks registered on an account:
 
-```
+```clojure
 (mondo/list-webhooks access-token account-id)
 ```
 
 Or delete a webhook to stop receiving transaction events:
 
-```
+```clojure
 (mondo/delete-webhook access-token webhook-id)
 ```
 
