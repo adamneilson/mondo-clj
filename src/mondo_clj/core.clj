@@ -110,8 +110,41 @@
   user." 
   [access-token]
   (if (not-nil? access-token)
-    (api/GET "/accounts" access-token)
+    (let [result (api/GET "/accounts" access-token)]
+      (assoc-in result [:accounts] 
+                (map (fn [acc] 
+                       (update-in acc [:created] zulu-to-instant))
+                     (:accounts result))))
     (api/get-error 400)))
+
+
+
+
+;;================================================
+;;
+;;  BALANCE
+;;
+;;================================================
+
+(defn read-balance
+  "Returns balance information for a specific account."
+  [access-token account-id]
+  (if (every? not-nil? [access-token account-id])
+    (let [result (->> {:account-id account-id}
+                      (pre-process-vals)
+                      (prepare-map)
+                      (api/GET "/balance" access-token))]
+      (if (and (contains? result :balance)
+               (contains? result :spend-today))
+        (-> result
+            ; coerce the balance & spend-today to doubles
+            (update-in [:balance] coerce-to-double-monetary-amount)
+            (update-in [:spend-today] coerce-to-double-monetary-amount))
+        ; we didn't get the balance in the result
+        result))
+    (api/get-error 400)))
+
+       
 
 
 
@@ -129,7 +162,12 @@
   [access-token transaction-id]
   (if (and (every? not-nil? [access-token transaction-id])
            (is-valid-txn-id? transaction-id))
-    (api/GET (format "/transactions/%s" transaction-id) access-token {"expand[]" "merchant"})
+    (-> (api/GET (format "/transactions/%s" transaction-id) access-token {"expand[]" "merchant"})
+        (update-in [:transaction :created] zulu-to-instant)
+        (update-in [:transaction :merchant :created] zulu-to-instant)
+        (update-in [:transaction :account-balance] coerce-to-double-monetary-amount)
+        (update-in [:transaction :amount] coerce-to-double-monetary-amount)
+        )
     (api/get-error 400)))
 
 
@@ -174,13 +212,23 @@
                                       :since since-zulu 
                                       :before before-zulu}))))
 
-      (api/GET "/transactions" access-token @opts))
+      ; covert all zulu times to instants
+      (let [result (api/GET "/transactions" access-token @opts)]
+        (-> result
+            (assoc-in [:transactions] (map (fn [tx] (update-in tx [:created] zulu-to-instant)) (:transactions result)))
+            (assoc-in [:transactions] (map (fn [tx] (update-in tx [:account-balance] coerce-to-double-monetary-amount)) (:transactions result)))
+            (assoc-in [:transactions] (map (fn [tx] (update-in tx [:amount] coerce-to-double-monetary-amount)) (:transactions result)))
+            )))
     (api/get-error 400)))
 
-(comment (prepare-map {:access-token "0000000000000000"
+
+(comment 
+  (prepare-map {:access-token "0000000000000000"
                        :account-id "account_id"
                        :limit [100 0] ;[per-page page-number]
-                       :since #inst "2015-11-26T00:00:00.000-00:00"}))
+                       :since #inst "2015-11-26T00:00:00.000-00:00"})
+)
+
 
 
 
@@ -191,16 +239,16 @@
   (if (and (every? not-nil? [access-token transaction-id])
            (is-valid-txn-id? transaction-id)
            (> (count metadata-map) 0))
-    (api/PATCH (format "/transactions/%s" transaction-id) 
-               access-token 
-               (reduce 
-                 (fn [m [k v]] 
-                   (assoc m (format "metadata[%s]" (name k)) v))
-                 {} metadata-map))
+    (-> (api/PATCH (format "/transactions/%s" transaction-id) 
+                   access-token 
+                   (reduce 
+                     (fn [m [k v]] 
+                       (assoc m (format "metadata[%s]" (name k)) v))
+                     {} metadata-map))
+        (update-in [:transaction :created] zulu-to-instant)
+        (update-in [:transaction :account-balance] coerce-to-double-monetary-amount)
+        (update-in [:transaction :amount] coerce-to-double-monetary-amount))
     (api/get-error 400)))
-
-(comment {:key1 "val1" :key2 "val2"})
-
 
 
 
@@ -297,9 +345,37 @@
 ;;
 ;;================================================
 
-  (defn upload-attachment [] nil)
-  (defn register-attachment [] nil)
-  (defn deregister-attachment [] nil)
+(defn upload-attachment [access-token file-name file-type]
+  (if (every? not-nil? [access-token file-name file-type])
+    (api/POST "/attachment/upload" 
+              access-token 
+              (prepare-map {:file-name file-name
+                            :file-type file-type})))
+  (api/get-error 400))
+
+
+
+(defn register-attachment [access-token external-id file-url file-type]
+  (if (and (every? not-nil? [access-token external-id file-name file-type])
+           (is-valid-txn-id? external-id))
+    (-> (api/POST "/attachment/register" 
+                  access-token 
+                  (prepare-map {:external-id external-id
+                                :file-url file-url
+                                :file-type file-type}))
+        (update-in [:attachment :created] zulu-to-instant))
+    (api/get-error 400)))
+
+    
+
+(defn deregister-attachment [access-token id]
+  (if (every? not-nil? [access-token id])
+    (api/POST "/attachment/deregister" 
+              access-token 
+              (prepare-map {:id id}))
+    (api/get-error 400)))
+
+
 
 
 

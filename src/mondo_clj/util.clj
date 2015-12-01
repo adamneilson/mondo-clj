@@ -67,6 +67,9 @@
                "yyyy-MM-dd'T'HH:mm:ss'Z'") inst)
     inst))
 
+(defn zulu-to-instant "doc-string" [zulu]
+  (.parse (java.text.SimpleDateFormat. "yyyy-MM-dd'T'HH:mm:ss") 
+          (-> zulu (clojure.string/split #"\.") first)))
 
 
 (defn deep-merge
@@ -77,3 +80,16 @@
     (last vals)))
 
 
+(defn round2
+  "Round a double to the given precision (number of significant digits)"
+  [d precision]
+  (let [factor (Math/pow 10 precision)]
+    (/ (Math/round (* d factor)) factor)))
+
+
+(defn coerce-to-double-monetary-amount 
+  "doc-string" 
+  [i]
+  (-> i
+      (* 0.01)
+      (round2 2)))
