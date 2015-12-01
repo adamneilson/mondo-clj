@@ -1,5 +1,6 @@
 (ns mondo-clj.api
   (:require 
+    [mondo-clj.util :refer :all]
     [org.httpkit.client :as http]
     [cheshire.core :refer :all]))
 
@@ -16,20 +17,6 @@
                             :filter (http/max-body-filter (* 1024 1000)) ; reject if body is more than 1000k
                             :insecure? false ; Need to contact a server with an untrusted SSL cert?
                             :follow-redirects false})
-
-(defn- keywordize-map [m] (reduce (fn [m [k v]] 
-                                    (assoc m (-> k
-                                                 (str)
-                                                 (clojure.string/trim)
-                                                 (clojure.string/replace #"_" "-")
-                                                 (keyword)) v)) {} m))
-
-(defn- deep-merge
-   "Recursively merges maps. If keys are not maps, the last value wins."
-   [& vals]
-   (if (every? map? vals)
-     (apply merge-with deep-merge vals)
-     (last vals)))
 
 
 

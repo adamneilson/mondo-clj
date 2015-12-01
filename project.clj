@@ -1,4 +1,4 @@
-(defproject mondo-clj "0.0.1"
+(defproject mondo-clj "0.0.2"
   :description "A lib to hook into Mondo bank API"
   :url "https://getmondo.co.uk"
   :license {:name "Eclipse Public License"
