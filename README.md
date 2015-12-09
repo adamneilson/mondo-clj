@@ -2,7 +2,7 @@
 
 <img src="https://cdn.rawgit.com/adamneilson/mondo-clj/master/resources/mondo-logo.svg" style="width:60%;display:block;margin:auto;">
 
-This clojure lib gives simple hooks for the [Mondo API](https://getmondo.co.uk/docs/). It's pre-alpha and not all functions are finalized.
+This **unofficial** clojure lib gives simple hooks for the [Mondo API](https://getmondo.co.uk/docs/). It's pre-alpha and not all functions are finalized.
 
 
 ## Installing 
