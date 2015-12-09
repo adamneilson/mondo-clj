@@ -12,7 +12,7 @@
 
 (defn underscore-keys [m] (reduce (fn [m [k v]] 
                                    (assoc m (-> k
-                                                (str)
+                                                (name)
                                                 (clojure.string/trim)
                                                 (clojure.string/replace #"-" "_")
                                                 (keyword)) v)) {} m))
@@ -38,7 +38,7 @@
 
 
 (defn is-valid-txn-id? "Does the format of the txn id look valid?" [transaction-id]
-  (not-nil? (re-find transaction-id #"tx\_[A-Za-z0-9]*")))
+  (not-nil? (re-find #"tx\_[A-Za-z0-9]*" transaction-id)))
 
 
 (defn hex-colour "doc-string" [s]
@@ -68,8 +68,9 @@
     inst))
 
 (defn zulu-to-instant "doc-string" [zulu]
-  (.parse (java.text.SimpleDateFormat. "yyyy-MM-dd'T'HH:mm:ss") 
-          (-> zulu (clojure.string/split #"\.") first)))
+  (when (seq zulu)
+    (.parse (java.text.SimpleDateFormat. "yyyy-MM-dd'T'HH:mm:ss") 
+            (-> zulu (clojure.string/split #"\.") first))))
 
 
 (defn deep-merge
@@ -90,6 +91,8 @@
 (defn coerce-to-double-monetary-amount 
   "doc-string" 
   [i]
-  (-> i
+  (println "coerce-to-double-monetary-amount: " i)
+  (when (not (nil? i))
+    (-> i
       (* 0.01)
-      (round2 2)))
+      (round2 2))))

@@ -78,7 +78,7 @@
                         :method :patch
                         :oauth-token (when (seq access-token) access-token)
                         :form-params metadata})
-        {:keys [status body error]} @(http/post url options)]
+        {:keys [status body error]} @(http/patch url options)]
     (if error
       (get-error status)
       (-> (decode body)
