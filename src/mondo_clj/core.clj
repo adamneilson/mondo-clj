@@ -53,10 +53,10 @@
 (defn refresh-access-token 
   "To limit the window of opportunity for attackers in the 
   event an access token is compromised, access tokens expire 
-  after 6 hours. To gain long-lived access to a user’s account,
-  it’s necessary to \“refresh\” your access when it expires using 
-  a refresh token. Only \“confidential\” clients are issued refresh 
-  tokens – \“public\” clients must ask the user to re-authenticate.
+  after 6 hours. To gain long-lived access to a users account,
+  its necessary to refresh your access when it expires using 
+  a refresh token. Only confidential clients are issued refresh 
+  tokens – public clients must ask the user to re-authenticate.
 
   Returns:
 
@@ -111,6 +111,7 @@
   [access-token]
   (if (not-nil? access-token)
     (let [result (api/GET "/accounts" access-token)]
+      (println result)
       (assoc-in result [:accounts] 
                 (map (fn [acc] 
                        (update-in acc [:created] zulu-to-instant))
@@ -214,11 +215,16 @@
 
       ; covert all zulu times to instants
       (let [result (api/GET "/transactions" access-token @opts)]
+        ;(println result)
         (-> result
-            (assoc-in [:transactions] (map (fn [tx] (update-in tx [:created] zulu-to-instant)) (:transactions result)))
-            (assoc-in [:transactions] (map (fn [tx] (update-in tx [:account-balance] coerce-to-double-monetary-amount)) (:transactions result)))
-            (assoc-in [:transactions] (map (fn [tx] (update-in tx [:amount] coerce-to-double-monetary-amount)) (:transactions result)))
-            )))
+            (assoc-in [:transactions] (map (fn [tx] 
+                                             (-> tx
+                                                 (update-in ["created"] zulu-to-instant)
+                                                 (update-in ["settled"] zulu-to-instant)
+                                                 (update-in ["account_balance"] coerce-to-double-monetary-amount)
+                                                 (update-in ["amount"] coerce-to-double-monetary-amount)
+                                                 (update-in ["local_amount"] coerce-to-double-monetary-amount)))
+                                           (:transactions result))))))
     (api/get-error 400)))
 
 
@@ -239,15 +245,17 @@
   (if (and (every? not-nil? [access-token transaction-id])
            (is-valid-txn-id? transaction-id)
            (> (count metadata-map) 0))
-    (-> (api/PATCH (format "/transactions/%s" transaction-id) 
-                   access-token 
-                   (reduce 
-                     (fn [m [k v]] 
-                       (assoc m (format "metadata[%s]" (name k)) v))
-                     {} metadata-map))
-        (update-in [:transaction :created] zulu-to-instant)
-        (update-in [:transaction :account-balance] coerce-to-double-monetary-amount)
-        (update-in [:transaction :amount] coerce-to-double-monetary-amount))
+    (let [result (api/PATCH (format "/transactions/%s" transaction-id) 
+                            access-token 
+                            (reduce 
+                              (fn [m [k v]] 
+                                (assoc m (format "metadata[%s]" (name k)) v))
+                              {} metadata-map))]
+      (println result)
+      (-> result
+          (update-in [:transaction :created] zulu-to-instant)
+          (update-in [:transaction :account-balance] coerce-to-double-monetary-amount)
+          (update-in [:transaction :amount] coerce-to-double-monetary-amount)))
     (api/get-error 400)))
 
 
@@ -321,7 +329,7 @@
 
 
 (defn list-webhooks [access-token account-id] 
-  (if (every? not-nil? [access-token account-id url])
+  (if (every? not-nil? [access-token account-id])
     (api/GET "/webhooks" 
              access-token 
              (prepare-map {:account-id account-id})))
@@ -356,7 +364,7 @@
 
 
 (defn register-attachment [access-token external-id file-url file-type]
-  (if (and (every? not-nil? [access-token external-id file-name file-type])
+  (if (and (every? not-nil? [access-token external-id file-url file-type])
            (is-valid-txn-id? external-id))
     (-> (api/POST "/attachment/register" 
                   access-token 
@@ -375,6 +383,12 @@
               (prepare-map {:id id}))
     (api/get-error 400)))
 
+
+
+(defn -main
+  "I don't do a whole lot ... yet."
+  [& args]
+  (println "Hello, Mondo!"))
 
 
 

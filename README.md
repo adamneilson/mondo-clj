@@ -2,7 +2,7 @@
 
 <img src="https://cdn.rawgit.com/adamneilson/mondo-clj/master/resources/mondo-logo.svg" style="width:60%;display:block;margin:auto;">
 
-This clojure lib gives simple hooks for the [Mondo API](https://getmondo.co.uk/docs/). It's pre-pre-alpha as I'm a couple of days away from getting my grubby paws on my shiny new Mondo account. So as of yet it's not been tested in the slightest.
+This clojure lib gives simple hooks for the [Mondo API](https://getmondo.co.uk/docs/). It's pre-alpha and not all functions are finalized.
 
 ## Installing 
 Current [semantic](http://semver.org/) version:
@@ -12,7 +12,7 @@ Current [semantic](http://semver.org/) version:
 To use with Leiningen, add
 
 ```clojure
-:dependencies [[mondo-clj 0.0.5]]
+:dependencies [[mondo-clj 0.1.9]]
 ```
 to your project.clj.
 
