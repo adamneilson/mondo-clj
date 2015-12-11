@@ -265,13 +265,11 @@ To remove an attachment, simply deregister this using its `id`
 
 
 ## Questions & Shortcomings?
-I don't have my Mondo account/card/app yet so this is pre-pre-alpha. That being said...
-
 1. Would be really good to have an API version made available. Adding the request header `X-Api-Version` to make sure of  compatibility going forward.
 2. It's unclear at this time whether Pagination allows for `before` to be either an instant or a transaction-id.
 
 
-> Just need to get my hands on one of these now....
+
 ![](https://raw.githubusercontent.com/adamneilson/mondo-clj/master/resources/mondo-alpha-card.png)
 
 ## License
