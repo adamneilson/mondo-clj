@@ -58,10 +58,12 @@
   ([uri access-token] (POST uri access-token {}))
   ([uri access-token params]
    (let [url (str api-url uri)
-         options (merge basic-request-options {:url url
-                                               :method :post
-                                               :oauth-token (when (seq access-token) access-token)
-                                               :form-params params})
+         options (-> basic-request-options
+                     (merge {:url url
+                             :method :post
+                             :oauth-token (when (seq access-token) access-token)
+                             :form-params params})
+                     (remove-nils))
          {:keys [status body error]} @(http/post url options)]
      (if error
        (get-error status)

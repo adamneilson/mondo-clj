@@ -91,7 +91,7 @@
 (defn coerce-to-double-monetary-amount 
   "doc-string" 
   [i]
-  (println "coerce-to-double-monetary-amount: " i)
+  ;(println "coerce-to-double-monetary-amount: " i)
   (when (not (nil? i))
     (-> i
       (* 0.01)

@@ -45,8 +45,11 @@
           :password password}
          (pre-process-vals)
          (prepare-map)
-         (api/POST "/oauth2/token"))
+         (api/POST "/oauth2/token" nil))
     (api/get-error 400)))
+
+
+
 
 
 
@@ -83,7 +86,7 @@
           :refresh-token refresh-token}
          (pre-process-vals)
          (prepare-map)
-         (api/POST "/oauth2/token"))
+         (api/POST "/oauth2/token" nil))
     (api/get-error 400)))
 
 
@@ -95,6 +98,8 @@
   (if (not-nil? access-token)
     (api/GET "/ping/whoami" access-token)
     (api/get-error 400)))
+
+
 
 
 
@@ -120,7 +125,6 @@
 
 
 
-
 ;;================================================
 ;;
 ;;  BALANCE
@@ -140,7 +144,8 @@
         (-> result
             ; coerce the balance & spend-today to doubles
             (update-in [:balance] coerce-to-double-monetary-amount)
-            (update-in [:spend-today] coerce-to-double-monetary-amount))
+            (update-in [:spend-today] coerce-to-double-monetary-amount)
+            (update-in [:ledger-balance] coerce-to-double-monetary-amount))
         ; we didn't get the balance in the result
         result))
     (api/get-error 400)))
@@ -170,6 +175,7 @@
         (update-in [:transaction :amount] coerce-to-double-monetary-amount)
         )
     (api/get-error 400)))
+
 
 
 
@@ -230,11 +236,10 @@
 
 (comment 
   (prepare-map {:access-token "0000000000000000"
-                       :account-id "account_id"
-                       :limit [100 0] ;[per-page page-number]
-                       :since #inst "2015-11-26T00:00:00.000-00:00"})
-)
-
+                :account-id "account_id"
+                :limit [100 0] ;[per-page page-number]
+                :since #inst "2015-11-26T00:00:00.000-00:00"})
+  )
 
 
 
@@ -257,6 +262,7 @@
           (update-in [:transaction :account-balance] coerce-to-double-monetary-amount)
           (update-in [:transaction :amount] coerce-to-double-monetary-amount)))
     (api/get-error 400)))
+
 
 
 

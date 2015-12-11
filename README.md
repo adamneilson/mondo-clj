@@ -13,7 +13,7 @@ Current [semantic](http://semver.org/) version:
 To use with Leiningen, add
 
 ```clojure
-:dependencies [[mondo-clj "0.1.9"]]
+:dependencies [[mondo-clj "0.1.10"]]
 ```
 to your project.clj.
 
