@@ -35,10 +35,10 @@ or by REPL:
 The Mondo API implements OAuth 2.0 so the first step is to get a token:
 
 ```clojure
-(mondo/get-access-token client-id
-                        client-secret
-                        username
-                        password)
+(mondo/get-access-token {:client-id "client-id"
+                         :client-secret "client-secret"
+                         :username "username"
+                         :password "password"})
 ```
 
 This should return a map similar to this:
@@ -60,7 +60,7 @@ As you can see I'm adding the `:status` to the returned map to give a bit of con
 At any time you can get information about an access token, using:
 
 ```clojure
-(mondo/whoami access-token)
+(mondo/whoami "access-token")
 ```
 
 returns:
@@ -80,7 +80,7 @@ returns:
 To get a list of accounts:
 
 ```clojure
-(mondo/list-accounts access-token)
+(mondo/list-accounts "access-token")
 ```
 Returns something like:
 
@@ -99,7 +99,7 @@ Returns something like:
 Get the balance of a specific account
 
 ```clojure
-(mondo/read-balance access-token account-id)
+(mondo/read-balance "access-token" "account-id")
 ```
 Returns:
 
@@ -118,7 +118,7 @@ NB: The [Mondo docs](https://getmondo.co.uk/docs/#balance) currently say that th
 Get details of a single transaction. NB: full merchant details are returned:
 
 ```clojure
-(mondo/get-transaction access-token transaction-id)
+(mondo/get-transaction "access-token" "transaction-id")
 ```
 
 Returns 
@@ -156,25 +156,32 @@ Returns
 Or list transactions
 
 ```clojure
-(mondo/list-transactions access-token account-id)
+(mondo/list-transactions {:access-token "access-token" 
+                          :account-id "account-id"})
 
 ;or 
 
-(mondo/list-transactions access-token account-id {:since #inst "2015-12-01T00:00:00.000-00:00"})
+(mondo/list-transactions {:access-token "access-token" 
+                          :account-id "account-id" 
+                          :since #inst "2015-12-01T00:00:00.000-00:00"})
 
 ;or 
 
-(mondo/list-transactions access-token account-id {:before #inst "2015-12-01T00:00:00.000-00:00"})
+(mondo/list-transactions {:access-token "access-token" 
+                          :account-id "account-id"
+                          :before #inst "2015-12-01T00:00:00.000-00:00"})
 
 ;or 
 
-(mondo/list-transactions access-token account-id {:since #inst "2015-12-01T00:00:00.000-00:00" :limit 48})
+(mondo/list-transactions {:access-token "access-token" 
+                          :account-id "account-id"
+                          :since #inst "2015-12-01T00:00:00.000-00:00" :limit 48})
 ```
 
 You can also add meta-data to a transaction
 
 ```clojure
-(mondo/annotate-transaction access-token transaction-id {:foo "bar" :baz "quux"})
+(mondo/annotate-transaction "access-token" "transaction-id" {:foo "bar" :baz "quux"})
 ```
 
 
@@ -183,7 +190,7 @@ You can also add meta-data to a transaction
 You can inject items into an accounts feed
 
 ```clojure
-(mondo/create-feed-item {:access-token "0000000000000000"
+(mondo/create-feed-item {:access-token "access-token"
                          :account-id "account_id"
                          :type "basic"
                          :params {:title "My custom item"
@@ -201,26 +208,26 @@ Web hooks allow your application to receive real-time, push notification of even
 You can register a webhook:
 
 ```clojure
-(mondo/register-webhook access-token account-id webhook-url)
+(mondo/register-webhook "access-token" "account-id" "webhook-url")
 ```
 
 List the web hooks registered on an account:
 
 ```clojure
-(mondo/list-webhooks access-token account-id)
+(mondo/list-webhooks "access-token" "account-id")
 ```
 
 Or delete a webhook to stop receiving transaction events:
 
 ```clojure
-(mondo/delete-webhook access-token webhook-id)
+(mondo/delete-webhook "access-token" "webhook-id")
 ```
 
 ### Attachments
 
 The first step when uploading an attachment is to obtain a temporary URL to which the file can be uploaded. The response will include a `:file-url` which will be the URL of the resulting file, and an `:upload-url` to which the file should be uploaded to.
 ```clojure
-(mondo/upload-attachment access-token file-name file-type)
+(mondo/upload-attachment "access-token" "file-name" "file-type")
 ```
 Returns:
 ```clojure
@@ -234,7 +241,7 @@ Returns:
 
 Once you have obtained a URL for an attachment, either by uploading to the `:upload-url` obtained from the `upload-attachment` endpoint above or by hosting a remote image, this URL can then be registered against a transaction. Once an attachment is registered against a transaction this will be displayed on the detail page of a transaction within the Mondo app.
  ```clojure
-(mondo/register-attachment access-token external-id file-url file-type)
+(mondo/register-attachment "access-token" "external-id" "file-url" "file-type")
 ```
 Returns:
 ```clojure
@@ -253,7 +260,7 @@ Returns:
 
 To remove an attachment, simply deregister this using its `id`
  ```clojure
-(mondo/deregister-attachment access-token id)
+(mondo/deregister-attachment "access-token" "id")
 ```
 
 
