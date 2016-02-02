@@ -9,15 +9,11 @@
 
 (facts "Core get-access-token tests"
        (let [access-token (-> (get-access-token {:grant-type "password" 
-                                      :client-id (:mondo_test_client_id env)
-                                      :client-secret (:mondo_test_client_secret env)
-                                      :username (:mondo_test_username env)
-                                      :password (:mondo_test_password env)})
+                                      :client-id (:mondo-test-client-id env)
+                                      :client-secret (:mondo-test-client-secret env)
+                                      :username (:mondo-test-username env)
+                                      :password (:mondo-test-password env)})
                    :access-token)]
-         (println ":client-id" (:mondo_test_client_id env))
-         (println ":client-secret" (:mondo_test_client_secret env))
-         (println ":username" (:mondo-test-username env))
-         (println ":password" (:mondo_test_password env))
 
          (fact "get a token from the api - wrong grant-type - missing fields"
                (-> (get-access-token {:grant-type "token"}) 
