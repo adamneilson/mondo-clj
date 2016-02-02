@@ -116,7 +116,7 @@
   [access-token]
   (if (not-nil? access-token)
     (let [result (api/GET "/accounts" access-token)]
-      (println result)
+      ;(println result)
       (assoc-in result [:accounts] 
                 (map (fn [acc] 
                        (update-in acc [:created] zulu-to-instant))

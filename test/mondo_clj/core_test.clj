@@ -3,17 +3,21 @@
             [midje.sweet :refer :all]
             [environ.core :refer [env]]
             [mondo-clj.core :refer :all]
+            [mondo-clj.util :refer :all]
             [cheshire.core :refer :all]))
 
 
 
 (facts "Core get-access-token tests"
        (let [access-token (-> (get-access-token {:grant-type "password" 
-                                      :client-id (:mondo-test-client-id env)
-                                      :client-secret (:mondo-test-client-secret env)
-                                      :username (:mondo-test-username env)
-                                      :password (:mondo-test-password env)})
-                   :access-token)]
+                                                 :client-id (:mondo-test-client-id env)
+                                                 :client-secret (:mondo-test-client-secret env)
+                                                 :username (:mondo-test-username env)
+                                                 :password (:mondo-test-password env)})
+                              :access-token)]
+
+         (fact "get a token from the api - correct grant-type"
+               access-token =not=> nil)
 
          (fact "get a token from the api - wrong grant-type - missing fields"
                (-> (get-access-token {:grant-type "token"}) 
@@ -25,17 +29,38 @@
                    :success?)
                => false)
 
-         (fact "get a token from the api - correct grant-type"
-               access-token =not=> nil)
-         
+
          (fact "Check who I am"
                (-> (whoami access-token)
-                  :authenticated)
-               => true)))
+                   :authenticated)
+               => true)
 
-(facts "Core refresh-access-token tests"
-       (fact "refresh access token"
-             (-> (refresh-access-token nil)
-                 :success?)
-             => false))
+         (fact "refresh access token"
+               (-> (refresh-access-token nil) :success?) => false)
+
+
+         (fact "Returns a list of accounts owned by the currently authorised user."
+               (-> (list-accounts access-token)
+                   (:accounts)
+                   (first)
+                   (keywordize-map)
+                   (:id)
+                   (subs 0 8)) => "acc_0000")
+
+         (fact "Returns balance information for a specific account."
+               (let [acc-id (-> (list-accounts access-token)
+                                (:accounts)
+                                (first)
+                                (keywordize-map)
+                                (:id))]
+                 (-> (read-balance access-token acc-id)
+                     (:balance)) => number?))
+                 
+
+
+
+         )
+
+       )
+
 
