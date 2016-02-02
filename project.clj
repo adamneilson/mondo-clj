@@ -7,17 +7,14 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [http-kit "2.1.18"]
                  [cheshire "5.5.0"]]
-  :dev-dependencies [[midje "1.8.3"  :exclusions [org.clojure/clojure]]
-                     [lein-midje "3.2"]
-                     [environ "1.0.2"]]
   :profiles {:uberjar {:omit-source true
                        :env {:production true}
                        :aot :all}
              :production {}
              :dev {:global-vars {*warn-on-reflection* true}
                    :dependencies [[midje "1.8.3" :exclusions [org.clojure/clojure]]
-                                  [lein-midje "3.2"]
                                   [environ "1.0.2"]]
+                   :plugins [[lein-midje "3.2"]]
                    :env {:dev true}}})
 
 

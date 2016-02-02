@@ -1,2 +1,2 @@
 language: clojure
-script: "lein with-profile dev midje"
+script: "lein midje"
