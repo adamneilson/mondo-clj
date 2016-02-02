@@ -11,7 +11,7 @@
                        :env {:production true}
                        :aot :all}
              :production {}
-             :dev {:global-vars {*warn-on-reflection* true}
+             :dev {:global-vars {*warn-on-reflection* false}
                    :dependencies [[midje "1.8.3" :exclusions [org.clojure/clojure]]
                                   [environ "1.0.2"]]
                    :plugins [[lein-midje "3.2"]]
