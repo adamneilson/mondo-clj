@@ -15,8 +15,7 @@
                    :dependencies [[midje "1.8.3" :exclusions [org.clojure/clojure]]
                                   [lein-midje "3.2"]
                                   [environ "1.0.2"]]
-                   :env {:dev true
-                         :mondo-test-credentials "/etc/mondo-test-credentials.json"}}})
+                   :env {:dev true}}})
 
 
 

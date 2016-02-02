@@ -8,14 +8,11 @@
 
 
 (facts "Core get-access-token tests"
-       (let [settings (-> (env :mondo-test-credentials)
-                          (slurp)
-                          (parse-string true))
-             access-token (-> (get-access-token {:grant-type "password" 
-                                      :client-id (:client-id settings)
-                                      :client-secret (:client-secret settings)
-                                      :username (:username settings)
-                                      :password (:password settings)})
+       (let [access-token (-> (get-access-token {:grant-type "password" 
+                                      :client-id (env :mondo_test_client_id)
+                                      :client-secret (env :mondo_test_client_secret)
+                                      :username (env :mondo_test_username)
+                                      :password (env :mondo_test_password)})
                    :access-token)]
          (fact "get a token from the api - wrong grant-type - missing fields"
                (-> (get-access-token {:grant-type "token"}) 
@@ -33,8 +30,7 @@
          (fact "Check who I am"
                (-> (whoami access-token)
                   :authenticated)
-               => true)
-         ))
+               => true)))
 
 (facts "Core refresh-access-token tests"
        (fact "refresh access token"
