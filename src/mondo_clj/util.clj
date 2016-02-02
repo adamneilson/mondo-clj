@@ -7,21 +7,28 @@
                                                 (str)
                                                 (clojure.string/trim)
                                                 (clojure.string/replace #"_" "-")
+                                                (clojure.string/replace #" " "-")
                                                 (keyword)) v)) {} m))
 
 
-(defn underscore-keys [m] (reduce (fn [m [k v]] 
-                                   (assoc m (-> k
-                                                (name)
-                                                (clojure.string/trim)
-                                                (clojure.string/replace #"-" "_")
-                                                (keyword)) v)) {} m))
+(defn underscore-keys [m] 
+  (if (map? m)
+    (reduce (fn [m [k v]] 
+              (assoc m (-> k
+                           (name)
+                           (clojure.string/trim)
+                           (clojure.string/replace #"-" "_")
+                           (clojure.string/replace #" " "_")
+                           (keyword)) v)) {} m)
+    {}))
 
 
 (defn remove-nils 
   "Removes all nil valued kv pairs from a map" 
   [m]
-  (apply dissoc m (for [[k v] m :when (nil? v)] k)))
+  (if (map? m)
+    (apply dissoc m (for [[k v] m :when (nil? v)] k))
+    {}))
 
 
 
@@ -43,25 +50,28 @@
 
 (defn hex-colour "doc-string" [s]
   (when (string? s)
-    (re-find #"\#[a-fA-F0-9]{3,6}" s)))
+    (when-let [hex (re-find #"\#[a-fA-F0-9]{3,6}" s)]
+        (clojure.string/lower-case hex))))
 
 
 (defn pre-process-vals 
   "Do any pre-processing or transformations on map." 
   [m]
   (reduce (fn [m [k v]] 
-            (assoc m k (if (string? v) 
+            (assoc m (keyword k) (if (string? v) 
                          (clojure.string/trim v)
                          v))) {} m))
 
 (defn is-between? 
   "Is the value between the high and low vals (inclusive)." 
   [value low high]
-  (and (>= value low)
-       (<= value high)))
+  (if (every? number? [value low high])
+    (and (>= value low)
+         (<= value high))
+    false))
 
 
-(defn instant-to-zulu "doc-string" [inst]
+(defn instant-to-zulu "Convert a clojure instant to a zulu formatted date string" [inst]
   (if (= (type inst) java.util.Date)
     (.format (java.text.SimpleDateFormat. 
                "yyyy-MM-dd'T'HH:mm:ss'Z'") inst)
@@ -84,15 +94,17 @@
 (defn round2
   "Round a double to the given precision (number of significant digits)"
   [d precision]
-  (let [factor (Math/pow 10 precision)]
-    (/ (Math/round (* d factor)) factor)))
+  (if (every? number? [d precision])
+    (let [factor (Math/pow 10 precision)]
+      (/ (Math/round (* d factor)) factor))
+    0.0))
 
 
 (defn coerce-to-double-monetary-amount 
   "doc-string" 
   [i]
   ;(println "coerce-to-double-monetary-amount: " i)
-  (when (not (nil? i))
+  (when (number? i)
     (-> i
       (* 0.01)
       (round2 2))))
