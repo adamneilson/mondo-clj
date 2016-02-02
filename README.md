@@ -4,6 +4,7 @@
 
 This **unofficial** clojure lib gives simple hooks for the [Mondo API](https://getmondo.co.uk/docs/). It's pre-alpha and not all functions are finalized.
 
+[![Build Status](https://travis-ci.org/adamneilson/mondo-clj.svg?branch=master)](https://travis-ci.org/adamneilson/mondo-clj)
 
 ## Installing 
 Current [semantic](http://semver.org/) version:
