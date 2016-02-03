@@ -75,11 +75,28 @@
                      (first)
                      (keywordize-map)
                      (:id)
-                     (subs 0 5))) => "tx_00"
-                     
-               
-
-
-         )))
+                     (subs 0 5)) => "tx_00"
+                 (-> (list-transactions {:access-token "fake-access-token"
+                                         :account-id account-id})
+                     :transactions
+                     (first)
+                     (keywordize-map)
+                     (:id)) => nil?
+                 (-> (list-transactions {:access-token access-token
+                                         :account-id "fake-account-id"})
+                     :transactions
+                     (first)
+                     (keywordize-map)
+                     (:id)) => nil?
+                 (-> (list-transactions {})
+                     :transactions
+                     (first)
+                     (keywordize-map)
+                     (:id)) => nil?
+                 (-> (list-transactions nil)
+                     :transactions
+                     (first)
+                     (keywordize-map)
+                     (:id)) => nil?))))
 
 
