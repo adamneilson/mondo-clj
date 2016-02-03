@@ -31,10 +31,10 @@
 
 
          (fact "Check who I am"
-               (-> (whoami access-token)
-                   :authenticated)
-               => true)
+               (-> (whoami access-token) :authenticated) => true
+               (-> (whoami "fake-access-token") :authenticated) => nil?)
 
+         
          (fact "refresh access token"
                (-> (refresh-access-token nil) :success?) => false)
 
@@ -45,22 +45,41 @@
                    (first)
                    (keywordize-map)
                    (:id)
-                   (subs 0 8)) => "acc_0000")
+                   (subs 0 8)) => "acc_0000"
+               (-> (list-accounts "fake-access-token")
+                   (:accounts)
+                   (first)
+                   (:id)) => nil?)
+
 
          (fact "Returns balance information for a specific account."
-               (let [acc-id (-> (list-accounts access-token)
-                                (:accounts)
-                                (first)
-                                (keywordize-map)
-                                (:id))]
-                 (-> (read-balance access-token acc-id)
+               (let [account-id (-> (list-accounts access-token)
+                                    (:accounts)
+                                    (first)
+                                    (keywordize-map)
+                                    (:id))]
+                 (-> (read-balance access-token account-id)
                      (:balance)) => number?))
-                 
 
 
 
-         )
+         (fact "List transactions that were made against a specific account."
+               (let [account-id (-> (list-accounts access-token)
+                                    (:accounts)
+                                    (first)
+                                    (keywordize-map)
+                                    (:id))]
+                 (-> (list-transactions {:access-token access-token
+                                         :account-id account-id})
+                     :transactions
+                     (first)
+                     (keywordize-map)
+                     (:id)
+                     (subs 0 5))) => "tx_00"
+                     
+               
 
-       )
+
+         )))
 
 

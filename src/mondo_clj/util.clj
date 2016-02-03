@@ -54,7 +54,7 @@
 (defn hex-colour "doc-string" [s]
   (when (string? s)
     (when-let [hex (re-find #"\#[a-fA-F0-9]{3,6}" s)]
-        (clojure.string/lower-case hex))))
+        (clojure.string/upper-case hex))))
 
 
 (defn pre-process-vals 

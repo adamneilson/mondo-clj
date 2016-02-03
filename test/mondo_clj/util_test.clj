@@ -59,14 +59,14 @@
 
        
        (fact "hex-colour parser"
-             (hex-colour "#aaax") => "#aaa"
-             (hex-colour "xxx#aaaxxx") => "#aaa"
+             (hex-colour "#aaax") => "#AAA"
+             (hex-colour "xxx#aaaxxx") => "#AAA"
              (hex-colour "#xaax") => nil?
              (hex-colour nil) => nil?
-             (hex-colour "#AAA") => "#aaa"
-             (hex-colour "#AAAAAA") => "#aaaaaa"
-             (hex-colour "#aAaAaA") => "#aaaaaa"
-             (hex-colour "#bbbbbb") => "#bbbbbb")
+             (hex-colour "#AAA") => "#AAA"
+             (hex-colour "#AAAAAA") => "#AAAAAA"
+             (hex-colour "#aAaAaA") => "#AAAAAA"
+             (hex-colour "#bbbbbb") => "#BBBBBB")
 
 
        (fact "Convert a clojure instant to a zulu formatted date string"
