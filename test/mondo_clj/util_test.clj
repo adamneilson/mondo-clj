@@ -10,12 +10,17 @@
 
        (fact "Checks for not nil"
              (not-nil? "xxxx") => true
+             (not-nil? ["xxxx"]) => true
+             (not-nil? []) => true
              (not-nil? nil) => false)
 
        (fact "make a map clojure shaped"
              (keywordize-map {"a" "a"}) => {:a "a"}
              (keywordize-map {"a_a" "a"}) => {:a-a "a"}
              (keywordize-map {"a a" "a"}) => {:a-a "a"}
+             (keywordize-map {}) => {}
+             (keywordize-map []) => {}
+             (keywordize-map "xxx") => {}
              (keywordize-map nil) => {})
 
 
@@ -40,6 +45,8 @@
              (is-between? 0.001 0 1) => true
              (is-between? -100 1 100) => false
              (is-between? "xxx" 1 100) => false
+             (is-between? "xxx" nil 100) => false
+             (is-between? "xxx" 1 nil) => false
              (is-between? nil 1 100) => false)
 
 
@@ -64,6 +71,7 @@
 
        (fact "Convert a clojure instant to a zulu formatted date string"
              (instant-to-zulu #inst "2000-01-01T00:00:00.000-00:00") => "2000-01-01T00:00:00Z"
+             (instant-to-zulu "xxx") => nil?
              (instant-to-zulu nil) => nil?)
 
 
@@ -90,6 +98,8 @@
              (round2 1 4) => 1.0
              (round2 -1 4) => -1.0
              (round2 nil 4) => 0.0
+             (round2 "xxx" 4) => 0.0
+             (round2 "xxx" "xxx") => 0.0
              (round2 1 nil) => 0.0)
 
        
@@ -100,6 +110,7 @@
              (coerce-to-double-monetary-amount -500) => -5.0
              (coerce-to-double-monetary-amount "xxx") => nil?
              (coerce-to-double-monetary-amount nil) => nil?
+             (coerce-to-double-monetary-amount []) => nil?
              (coerce-to-double-monetary-amount [1 2 3]) => nil?)
        
        )

@@ -2,13 +2,16 @@
 
 
 
-(defn keywordize-map [m] (reduce (fn [m [k v]] 
-                                   (assoc m (-> k
-                                                (str)
-                                                (clojure.string/trim)
-                                                (clojure.string/replace #"_" "-")
-                                                (clojure.string/replace #" " "-")
-                                                (keyword)) v)) {} m))
+(defn keywordize-map [m] 
+  (if (map? m)  
+    (reduce (fn [m [k v]] 
+              (assoc m (-> k
+                           (str)
+                           (clojure.string/trim)
+                           (clojure.string/replace #"_" "-")
+                           (clojure.string/replace #" " "-")
+                           (keyword)) v)) {} m)
+    {}))
 
 
 (defn underscore-keys [m] 
@@ -72,10 +75,9 @@
 
 
 (defn instant-to-zulu "Convert a clojure instant to a zulu formatted date string" [inst]
-  (if (= (type inst) java.util.Date)
+  (when (= (type inst) java.util.Date)
     (.format (java.text.SimpleDateFormat. 
-               "yyyy-MM-dd'T'HH:mm:ss'Z'") inst)
-    inst))
+               "yyyy-MM-dd'T'HH:mm:ss'Z'") inst)))
 
 (defn zulu-to-instant "doc-string" [zulu]
   (when (seq zulu)
